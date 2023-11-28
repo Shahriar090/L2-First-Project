@@ -3,10 +3,18 @@ import {
   Guardian,
   LocalGuardian,
   Student,
+  StudentMethodsModel,
   UserName,
+  studentMethods,
 } from './student/student.interface';
+import bcrypt from 'bcrypt';
+import config from '../config';
 
-const userNameSchema = new Schema<UserName>({
+const userNameSchema = new Schema<
+  UserName,
+  StudentMethodsModel,
+  studentMethods
+>({
   firstName: { type: String, required: true },
   middleName: { type: String },
   lastName: { type: String, required: true },
@@ -30,6 +38,12 @@ const localGuardianSchema = new Schema<LocalGuardian>({
 
 const studentSchema = new Schema<Student>({
   id: { type: String, unique: true },
+  password: {
+    type: String,
+    required: [true, 'Password is required'],
+    unique: true,
+    maxlength: [20, 'Password cannot be more than 20 characters'],
+  },
   name: {
     type: userNameSchema,
     required: true,
@@ -68,6 +82,29 @@ const studentSchema = new Schema<Student>({
   },
 });
 
-// const User = model<IUser>('User', userSchema);
+//pre save middleware/hook
+studentSchema.pre('save', async function (next) {
+  try {
+    const user = this;
+    user.password = await bcrypt.hash(
+      user.password,
+      Number(config.bcrypt_salt_round),
+    );
+    next();
+  } catch (error) {
+    console.log(error);
+  }
+});
 
-export const StudentModel = model<Student>('Student', studentSchema);
+studentSchema.post('save', function () {
+  console.log(this, 'post will saved data');
+});
+
+studentSchema.methods.isUserExists = async function (id: string) {
+  const existingUser = await StudentModel.findOne({ id });
+  return existingUser;
+};
+export const StudentModel = model<Student, StudentMethodsModel>(
+  'Student',
+  studentSchema,
+);
