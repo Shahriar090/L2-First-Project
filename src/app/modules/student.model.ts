@@ -41,7 +41,7 @@ const studentSchema = new Schema<Student>({
   password: {
     type: String,
     required: [true, 'Password is required'],
-    unique: true,
+
     maxlength: [20, 'Password cannot be more than 20 characters'],
   },
   name: {
@@ -80,8 +80,10 @@ const studentSchema = new Schema<Student>({
     enum: ['active', 'blocked'],
     default: 'active',
   },
+  isDeleted: { type: Boolean, default: false },
 });
 
+// document middleware
 //pre save middleware/hook
 studentSchema.pre('save', async function (next) {
   try {
@@ -96,8 +98,15 @@ studentSchema.pre('save', async function (next) {
   }
 });
 
-studentSchema.post('save', function () {
-  console.log(this, 'post will saved data');
+studentSchema.post('save', function (doc, next) {
+  doc.password = '';
+  next();
+});
+
+// query middleware
+studentSchema.pre('find', function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
 });
 
 studentSchema.methods.isUserExists = async function (id: string) {
