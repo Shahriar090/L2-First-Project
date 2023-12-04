@@ -11,7 +11,6 @@ app.use(cors());
 // application routes
 app.use('/api/v1/students', StudentRoutes);
 app.use('/api/v1/users', UserRoutes);
-// app.use('/', studentRoute);
 const getAController = (req: Request, res: Response) => {
   const a = 'welcome to the server of down fall';
   res.send(a);

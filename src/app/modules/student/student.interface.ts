@@ -22,7 +22,7 @@ export type UserName = {
   lastName: string;
 };
 
-export type Student = {
+export type TStudent = {
   id: string;
   user: Types.ObjectId;
   password: string;
@@ -43,11 +43,11 @@ export type Student = {
 };
 
 export type studentMethods = {
-  isUserExists(id: string): Promise<Student | null>;
+  isUserExists(id: string): Promise<TStudent | null>;
 };
 
 export type StudentMethodsModel = Model<
-  Student,
+  TStudent,
   Record<string, never>,
   studentMethods
 >;

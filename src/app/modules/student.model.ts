@@ -2,7 +2,7 @@ import { Schema, model } from 'mongoose';
 import {
   Guardian,
   LocalGuardian,
-  Student,
+  TStudent,
   StudentMethodsModel,
   UserName,
   studentMethods,
@@ -36,7 +36,7 @@ const localGuardianSchema = new Schema<LocalGuardian>({
   address: { type: String, required: true },
 });
 
-const studentSchema = new Schema<Student>({
+const studentSchema = new Schema<TStudent>({
   id: { type: String, unique: true },
   user: {
     type: Schema.Types.ObjectId,
@@ -115,7 +115,7 @@ studentSchema.methods.isUserExists = async function (id: string) {
   const existingUser = await StudentModel.findOne({ id });
   return existingUser;
 };
-export const StudentModel = model<Student, StudentMethodsModel>(
+export const StudentModel = model<TStudent, StudentMethodsModel>(
   'Student',
   studentSchema,
 );
