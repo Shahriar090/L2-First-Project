@@ -1,7 +1,11 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { studentService } from './student.service';
 
-const getAllStudents = async (req: Request, res: Response) => {
+const getAllStudents = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const result = await studentService.getAllStudentsFromDb();
     res.status(200).json({
@@ -9,15 +13,16 @@ const getAllStudents = async (req: Request, res: Response) => {
       message: 'Students Are Retrieved Successfully',
       data: result,
     });
-  } catch (error: any) {
-    res.status(500).json({
-      success: true,
-      message: error.message || 'Students Retrieved Failed, Please Try Again',
-    });
+  } catch (error) {
+    next(error);
   }
 };
 
-const getSingleStudentById = async (req: Request, res: Response) => {
+const getSingleStudentById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const { studentId } = req.params;
     const result = await studentService.getStudentById(studentId);
@@ -26,15 +31,16 @@ const getSingleStudentById = async (req: Request, res: Response) => {
       message: 'Student Retrieved Successfully',
       data: result,
     });
-  } catch (error: any) {
-    res.status(200).json({
-      success: true,
-      message: error.message || 'Student Retrieved Failed',
-    });
+  } catch (error) {
+    next(error);
   }
 };
 
-const deleteStudent = async (req: Request, res: Response) => {
+const deleteStudent = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const { studentId } = req.params;
     const result = await studentService.deleteStudentFromDb(studentId);
@@ -43,11 +49,8 @@ const deleteStudent = async (req: Request, res: Response) => {
       message: 'Student deleted successfully',
       data: result,
     });
-  } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: error.message || 'Student delete failed',
-    });
+  } catch (error) {
+    next(error);
   }
 };
 

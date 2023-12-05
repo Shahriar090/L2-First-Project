@@ -7,8 +7,6 @@ import {
   UserName,
   studentMethods,
 } from './student/student.interface';
-import bcrypt from 'bcrypt';
-import config from '../config';
 
 const userNameSchema = new Schema<
   UserName,
@@ -44,12 +42,6 @@ const studentSchema = new Schema<TStudent>({
     unique: true,
     ref: 'User',
   },
-  password: {
-    type: String,
-    required: [true, 'Password is required'],
-
-    maxlength: [20, 'Password cannot be more than 20 characters'],
-  },
   name: {
     type: userNameSchema,
     required: true,
@@ -83,26 +75,6 @@ const studentSchema = new Schema<TStudent>({
   profileImg: { type: String },
 
   isDeleted: { type: Boolean, default: false },
-});
-
-// document middleware
-//pre save middleware/hook
-studentSchema.pre('save', async function (next) {
-  try {
-    const user = this;
-    user.password = await bcrypt.hash(
-      user.password,
-      Number(config.bcrypt_salt_round),
-    );
-    next();
-  } catch (error) {
-    console.log(error);
-  }
-});
-
-studentSchema.post('save', function (doc, next) {
-  doc.password = '';
-  next();
 });
 
 // query middleware
