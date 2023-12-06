@@ -26,29 +26,34 @@ const localGuardianValidationSchema = z.object({
   address: z.string(),
 });
 
-const studentValidationSchema = z.object({
-  id: z.string().min(1),
-  password: z.string().max(20),
-  name: userNameValidationSchema.required(),
-  gender: z
-    .enum(['male', 'female', 'others'])
-    .refine((value) => value !== undefined, { message: 'Gender is required' }),
-  dateOfBirth: z.string(),
-  email: z
-    .string()
-    .refine((value) => value !== undefined, { message: 'Email is required' }),
-  contactNo: z.string(),
-  emergencyContactNo: z.string(),
-  bloodGroup: z
-    .enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'])
-    .optional(),
-  presentAddress: z.string(),
-  permanentAddress: z.string(),
-  guardian: guardianValidationSchema.required(),
-  localGuardian: localGuardianValidationSchema.required(),
-  profileImg: z.string().optional(),
-  isActive: z.enum(['active', 'blocked']).default('active'),
-  isDeleted: z.boolean(),
+const createStudentValidationSchema = z.object({
+  body: z.object({
+    password: z.string().max(20),
+    student: z.object({
+      name: userNameValidationSchema.required(),
+      gender: z
+        .enum(['male', 'female', 'others'])
+        .refine((value) => value !== undefined, {
+          message: 'Gender is required',
+        }),
+      dateOfBirth: z.string(),
+      email: z.string().refine((value) => value !== undefined, {
+        message: 'Email is required',
+      }),
+      contactNo: z.string(),
+      emergencyContactNo: z.string(),
+      bloodGroup: z
+        .enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'])
+        .optional(),
+      presentAddress: z.string(),
+      permanentAddress: z.string(),
+      guardian: guardianValidationSchema.required(),
+      localGuardian: localGuardianValidationSchema.required(),
+      profileImg: z.string().optional(),
+    }),
+  }),
 });
 
-export default studentValidationSchema;
+export const studentValidations = {
+  createStudentValidationSchema,
+};

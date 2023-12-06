@@ -1,14 +1,9 @@
-import { NextFunction, Request, RequestHandler, Response } from 'express';
 import { studentService } from './student.service';
 import sendResponse from '../../utils/sendResponse';
 import httpStatus from 'http-status-codes';
+import catchAsync from '../../utils/catchAsync';
 
-const catchAsync = (fn: RequestHandler) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    Promise.resolve(fn(req, res, next)).catch((err) => next(err));
-  };
-};
-const getAllStudents = catchAsync(async (req, res, next) => {
+const getAllStudents = catchAsync(async (req, res) => {
   const result = await studentService.getAllStudentsFromDb();
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -18,7 +13,7 @@ const getAllStudents = catchAsync(async (req, res, next) => {
   });
 });
 
-const getSingleStudentById = catchAsync(async (req, res, next) => {
+const getSingleStudentById = catchAsync(async (req, res) => {
   const { studentId } = req.params;
   const result = await studentService.getStudentById(studentId);
   sendResponse(res, {
@@ -29,7 +24,7 @@ const getSingleStudentById = catchAsync(async (req, res, next) => {
   });
 });
 
-const deleteStudent = catchAsync(async (req, res, next) => {
+const deleteStudent = catchAsync(async (req, res) => {
   const { studentId } = req.params;
   const result = await studentService.deleteStudentFromDb(studentId);
   sendResponse(res, {
